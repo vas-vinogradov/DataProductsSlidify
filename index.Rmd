@@ -1,0 +1,104 @@
+---
+title       : MPG Prediction
+subtitle    : Data Product project
+author      : Vasily Vinogradov
+job         : 
+framework   : html5slides   # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+## Shine App Information
+
+This application is built to demonstrate shiny app functionality. It is basically linear regression project. 
+
+---
+## Data Source
+
+Source data is standard mtcars data set. 
+
+```{r}
+head(mtcars,10)
+```
+
+---
+## Model description
+
+We build a linear regression model to predict miles per gallon (mpg) with 3 variables :
+
+* Q Sec
+* Car weight
+* Transmission type
+
+```{r eval=FALSE}
+fit3 <- lm(mpg ~ wt + am + qsec, data=mtcars)  
+```
+
+---
+## Input and output
+
+You can change input variables on left pane, and you can see results on right pane:
+
+* Expected value for miles per gallon
+* Plot that demonstrates predicted value vs training data.
+
+We do prediction with standard function predict.lm
+
+```{r eval=FALSE}
+mpg<-predict.lm(fit3, newdata=data.frame(wt,qsec,am))
+```
+
+---
+## Results
+
+You can see data with plot and text output.
+
+```{r echo=FALSE}
+
+library(ggplot2)
+fit3 <- lm(mpg ~ wt + am + qsec, data=mtcars)  
+multiplot <- function(..., plotlist=NULL, cols) {
+  require(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # Make the panel
+  plotCols = cols                          # Number of columns of plots
+  plotRows = ceiling(numPlots/plotCols) # Number of rows needed, calculated from # of cols
+  
+  # Set up the page
+  grid.newpage()
+  pushViewport(viewport(layout = grid.layout(plotRows, plotCols)))
+  vplayout <- function(x, y)
+    viewport(layout.pos.row = x, layout.pos.col = y)
+  
+  # Make each plot, in the correct location
+  for (i in 1:numPlots) {
+    curRow = ceiling(i/plotCols)
+    curCol = (i-1) %% plotCols + 1
+    print(plots[[i]], vp = vplayout(curRow, curCol ))
+  }
+  
+}           
+
+wt<-2.70
+qsec<-18
+am<-1
+
+
+mpg<-predict.lm(fit3, newdata=data.frame(wt,qsec,am))
+
+mpg
+           
+           g1<-ggplot(mtcars, aes(x=wt, y=mpg, colour=am)) + geom_point() + ggtitle("MPG vs Weight")+annotate("point",size = 5, shape = 19, color = "#00FF00", x = wt, y = mpg)
+           g2<-ggplot(mtcars, aes(x=qsec, y=mpg, colour=am)) + geom_point() +ggtitle("MPG vs Qsec")+annotate("point",size = 5, shape = 19, color = "#00FF00", x = qsec, y = mpg)
+           multiplot(g1, g2, cols = 2)
+```
+
+
+
